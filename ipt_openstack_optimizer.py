@@ -33,7 +33,7 @@ NEUTRON_RAW_PRE_HOOK_i = 1
 CUSTOM_FILTER_FWD = "neutron-optimize-FORWARD"
 NEUTRON_FILTER_FWD = "neutron-openvswi-FORWARD"
 NEUTRON_FILTER_FWD_HOOK = "FORWARD"
-NEUTRON_FILTER_FWD_HOOK_i = 2
+NEUTRON_FILTER_FWD_HOOK_i = 1
 
 # Read UUID from RAW_PRE table as it contains 1 extra char not available in FILTER_FWD
 GENERATE_VM_CHAIN_NAME            = lambda x: "optimize-{}".format(x) if x else None
@@ -227,8 +227,8 @@ class OpenStackFirewallOptimizer(object):
             self.logger.info('>> Add new VM(s)! {}'.format(added_s))
 
         # Remove old entries
-        for _uuid in removed_s:
-            self.logger.debug('>> Removing VM {}'.format(_uuid))
+        for i, _uuid in enumerate(removed_s):
+            self.logger.info('>> [#{}] Removing VM {}'.format(i+1, _uuid))
             vm_chain = GENERATE_VM_CHAIN_NAME(_uuid)
             _rule = optimized[_uuid]
             # Iterate insertion tables and do cleanup
@@ -246,8 +246,8 @@ class OpenStackFirewallOptimizer(object):
                 iptc_helper3.delete_chain(table, vm_chain, ipv6=False)
 
         # Add new entries
-        for _uuid in added_s:
-            self.logger.debug('>> Adding VM {}'.format(_uuid))
+        for i, _uuid in enumerate(added_s):
+            self.logger.info('>> [#{}] Adding VM {}'.format(i+1, _uuid))
             vm_chain = GENERATE_VM_CHAIN_NAME(_uuid)
 
             ### RAW TABLE ###
